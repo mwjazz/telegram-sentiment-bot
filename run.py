@@ -14,37 +14,63 @@ from googletrans import Translator
 from google.cloud import language_v1
 from google.cloud.language_v1 import enums
 
+TELEGRAM_API_CREDENTIALS = "your_telegam_api_credentials"
+
 def translate_message(text):
+  """
+  Detects the language of a text and translates it to English
+  
+  Args:
+    text The text to translate.
+  """
   translator = Translator()
   try:
     translation = translator.translate(text, src=detect(text))
   except:
     translation = translator.translate('')
   tranlated_msg = translation.text  
-  return tranlated_msg
+  return translated_text
 
 def convert_emoticons(text):
+  """
+  Converts emoticons to its respective descriptive text.
+  
+  Args:
+    text The text to scrape for emoticons to convert.
+  """
     for emot in EMOTICONS:
         text = re.sub(u'('+emot+')', "_".join(EMOTICONS[emot].replace(",","").split()), text)
-    return text
+    return converted_text
 
 def convert_emojis(text):
+  """
+  Converts emojis to its respective descriptive text.
+  
+  Args:
+    text The text to scrape for emoticons to convert.
+  """
   for emot in UNICODE_EMO:
     try:
       text = re.sub(r'('+emot+')', "_".join(UNICODE_EMO[emot].replace(",","").replace(":","").split()), text)
     except Exception:
       pass
-  return text
+  return converted_text
 
 def clean_message(text):
+  """
+  Processes raw text with various methods.
+  
+  Args:
+    text The text be processed.
+  """
   user_removed = re.sub(r'@[A-Za-z0-9]+','',text)
   link_removed = re.sub('https?://[A-Za-z0-9./]+','',user_removed)
   number_removed = re.sub('\d+', '', link_removed)
   trans = translate_message(number_removed)
   emot_conv = convert_emoticons(trans)
   emoj_conv = convert_emojis(emot_conv)
-  final = emoj_conv
-  return emoj_conv
+  processed_text = emoj_conv
+  return processed_text
 
 def analyze_sentiment(text_content):
     """
@@ -61,9 +87,8 @@ def analyze_sentiment(text_content):
     # Available types: PLAIN_TEXT, HTML
     type_ = enums.Document.Type.PLAIN_TEXT
 
-    # Optional. If not specified, the language is automatically detected.
-    # For list of supported languages:
-    # https://cloud.google.com/natural-language/docs/languages
+    # Setting the language to english as every text is translated prior to the
+    # execution of this function.
     language = "en"
     document = {"content": text_content, "type": type_, "language": language}
 
@@ -72,11 +97,17 @@ def analyze_sentiment(text_content):
 
     response = client.analyze_sentiment(document, encoding_type=encoding_type)
     # Get overall sentiment of the input document
-    score = u"SentiGinger score: {}".format(round(response.document_sentiment.score, 1))
-    magnitude = u"SentiGinger magnitude: {}".format(round(response.document_sentiment.magnitude, 1))
+    score = u"Score: {}".format(round(response.document_sentiment.score, 1))
+    magnitude = u"Magnitude: {}".format(round(response.document_sentiment.magnitude, 1))
     return score, magnitude
 
 def handle(msg):
+  """
+    Processes telegram messages and replies with sentiment score and magnitude.
+
+    Args:
+      msg The telegram message.
+  """
   chat_id = msg['chat']['id']
   text = msg['text']
 
@@ -84,9 +115,10 @@ def handle(msg):
   score, magnitude = analyze_sentiment(clean_message(text)) 
   bot.sendMessage(chat_id, str(score + ' ,' + magnitude))
 
-bot = telepot.Bot('869154407:AAFcpQaMoNGHMWsDga4dK8eRAPKsm7CtTHM')
+# Authenticate and start the bot.
+bot = telepot.Bot(TELEGRAM_API_CREDENTIALS)
 bot.message_loop(handle)
 print('I am listening...')
 
-while 1:
+while True:
   time.sleep(10)
