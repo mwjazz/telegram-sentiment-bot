@@ -6,7 +6,9 @@ Runs a simple telegram bot that uses the [Google Cloud Natural Language API](htt
 1.  Create a Google Cloud Project via the [Google Cloud Console](console.cloud.google.com) and enable billing.
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/install)
 3.  Follow the instructions after executing 
-    ```gcloud init````
+    ```
+    gcloud init
+    ````
     This includes selecting the Cloud Project created in the first step.
 4.  Now we can create a service account and store its credentials.
     ```
@@ -21,4 +23,6 @@ Runs a simple telegram bot that uses the [Google Cloud Natural Language API](htt
     ```
     
 To start the bot run:
-```python get_sentiment.py```
+```
+python run.py
+```
