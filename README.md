@@ -5,12 +5,12 @@ Runs a simple telegram bot that uses the [Google Cloud Natural Language API](htt
 ## Setup
 1.  Open the Telegram App and start a chat with "BotFather" to create a bot and receive API credentials.
 2.  Create a Google Cloud Project via the [Google Cloud Console](console.cloud.google.com) and enable billing.
-3.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/install)
-4.  Follow the instructions after executing 
+3.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/install).
+4.  Follow the instructions after executing: 
     ```
     gcloud init
     ````
-    This includes selecting the Cloud Project created in the first step.
+    This includes selecting the Cloud Project created in the second step.
 5.  Now we can create a service account and store its credentials.
     ```
     export GOOGLE_CLOUD_PROJECT="your-project-id"
